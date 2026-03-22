@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Auto Poster & Scheduler</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; color: #1c1e21; margin: 0; padding: 2rem; }
+        .container { background-color: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); width: 100%; max-width: 600px; margin: 0 auto; }
+        h1, h2 { color: #1877f2; text-align: center; }
+        h1 { font-size: 1.8rem; margin-bottom: 1rem; }
+        h2 { font-size: 1.4rem; margin-top: 2rem; border-top: 1px solid #ddd; padding-top: 1.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; font-weight: 600; margin-bottom: 0.5rem; }
+        input[type="text"], input[type="datetime-local"], textarea { width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; box-sizing: border-box; }
+        textarea { resize: vertical; min-height: 120px; }
+        .btn { display: block; width: 100%; padding: 0.8rem; background-color: #1877f2; color: #fff; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background-color 0.3s; }
+        .btn:hover { background-color: #166fe5; }
+        .flash { padding: 1rem; margin-bottom: 1.5rem; border-radius: 6px; text-align: center; }
+        .flash.success { background-color: #eaf6ec; color: #3c763d; border: 1px solid #d6e9c6; }
+        .flash.error { background-color: #f2dede; color: #a94442; border: 1px solid #ebccd1; }
+        .scheduled-jobs table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        .scheduled-jobs th, .scheduled-jobs td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .scheduled-jobs th { background-color: #f2f2f2; }
+        .delete-btn { color: #a94442; text-decoration: none; font-weight: bold; }
+        .delete-btn:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Facebook Auto Poster & Scheduler</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="page_id">Page ID</label>
+                <input type="text" id="page_id" name="page_id" placeholder="Masukkan ID Halaman Facebook Anda" required>
+            </div>
+            <div class="form-group">
+                <label for="page_token">Page Access Token</label>
+                <input type="text" id="page_token" name="page_token" placeholder="Masukkan Token Akses Halaman Anda" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" placeholder="Tulis status yang ingin Anda posting..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="schedule_time">Schedule Time (Kosongkan untuk post sekarang)</label>
+                <input type="datetime-local" id="schedule_time" name="schedule_time">
+            </div>
+            <button type="submit" class="btn">Submit Post</button>
+        </form>
+
+        {% if jobs %}
+        <div class="scheduled-jobs">
+            <h2>Scheduled Posts</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Jadwal</th>
+                        <th>Waktu Eksekusi</th>
+                        <th>Aksi</th>
+                 
